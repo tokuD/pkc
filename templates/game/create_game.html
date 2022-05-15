@@ -1,0 +1,15 @@
+{% extends '_base.html' %}
+
+
+{% block title %}
+    結果記録
+{% endblock title %}
+
+
+
+{% block content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+    </form>
+{% endblock content %}

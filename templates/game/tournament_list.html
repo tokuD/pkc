@@ -1,0 +1,15 @@
+{% extends '_base.html' %}
+
+{% block title %}
+    大会一覧
+{% endblock title %}
+
+
+
+{% block content %}
+    {% for object in object_list %}
+        {{ object }}
+        <a href="{% url 'game:enroll_tournament' object.pk  %}">参加登録</a>
+        <a href="{% url 'game:create_game' object.pk  %}">結果入力</a>
+    {% endfor %}
+{% endblock content %}

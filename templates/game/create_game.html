@@ -8,8 +8,112 @@
 
 
 {% block content %}
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-    </form>
+<form action="" method="post">
+    {% csrf_token %}
+    <div class="form-floating mb-3">
+        <input type="text" name="finished" value="{{ now }}" required id="id_finished" class="form-control">
+        <label for="id_finished">試合終了時刻</label>
+    </div>
+    <div class=" form-floating mb-3">
+        <select name="first_second" id="id_first_second" required class="form-control">
+            <option value="" selected>-----------</option>
+            <option value="True">先行</option>
+            <option value="False">後攻</option>
+        </select>
+        <label for="id_first_second">先行or後攻</label>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-2">
+            <div class=" form-floating mb-3">
+                <select name="player1" id="id_player1" required class=" form-control" disabled>
+                    {% for zip in player_and_num %}
+                    {% if zip.player == user %}
+                    <option selected value="{{ zip.player.pk }}">{{ zip.num }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+                <label for="id_player1">あなた</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating mb-3">
+                <select name="skill1" id="id_skill1" required class="form-control">
+                    <option value="" selected>----------</option>
+                    {% for skill in skills %}
+                    <option value="{{ skill.pk }}">{{ skill }}</option>
+                    {% endfor %}
+                </select>
+                <label for="id_skill1">使用スキル</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating mb-3">
+                <select name="deck_thema1" id="id_deck_thema1" required class="form-control">
+                    <option value="" selected>----------</option>
+                    {% for thema in themas %}
+                    <option value="{{ thema.pk }}">{{ thema }}</option>
+                    {% endfor %}
+                </select>
+                <label for="id_deck_thema1">使用テーマ</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-2">
+            <div class=" form-floating mb-3">
+                <select name="player2" id="id_player2" required class=" form-control">
+                    <option value="" selected>----------</option>
+                    {% for zip in player_and_num %}
+                    <option value="{{ zip.player.pk }}">{{ zip.num }}</option>
+                    {% endfor %}
+                </select>
+                <label for="id_player2">対戦相手</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating mb-3">
+                <select name="skill2" id="id_skill2" required class="form-control">
+                    <option value="" selected>----------</option>
+                    {% for skill in skills %}
+                    <option value="{{ skill.pk }}">{{ skill }}</option>
+                    {% endfor %}
+                </select>
+                <label for="id_skill2">相手使用スキル</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating mb-3">
+                <select name="deck_thema2" id="id_deck_thema2" required class="form-control">
+                    <option value="" selected>----------</option>
+                    {% for thema in themas %}
+                    <option value="{{ thema.pk }}">{{ thema }}</option>
+                    {% endfor %}
+                </select>
+                <label for="id_deck_thema2">相手使用テーマ</label>
+            </div>
+        </div>
+    </div>
+
+    <div class=" form-floating mb-3">
+        <select name="result" id="id_result" required class="form-control">
+            <option value="" selected>-----------</option>
+            <option value="1">勝ち</option>
+            <option value="-1">負け</option>
+            <option value="-1">引き分け</option>
+        </select>
+        <label for="id_result">勝敗</label>
+    </div>
+
+        <div class=" form-check form-switch mb-1">
+            <input type="checkbox" class=" form-check-input" id="fix_thema">
+            <label for="fix_thema" class="form-check-label">テーマを固定</label>
+        </div>
+        <div class=" form-check form-switch mb-3">
+            <input type="checkbox" class=" form-check-input" id="fix_skill">
+            <label for="fix_skill" class="form-check-label">スキルを固定</label>
+        </div>
+    <button class="btn btn-primary">送信</button>
+</form>
 {% endblock content %}

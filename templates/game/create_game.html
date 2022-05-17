@@ -1,5 +1,5 @@
 {% extends '_base.html' %}
-
+{% load static %}
 
 {% block title %}
     結果記録
@@ -8,112 +8,222 @@
 
 
 {% block content %}
-<form action="" method="post">
-    {% csrf_token %}
-    <div class="form-floating mb-3">
-        <input type="text" name="finished" value="{{ now }}" required id="id_finished" class="form-control">
-        <label for="id_finished">試合終了時刻</label>
-    </div>
-    <div class=" form-floating mb-3">
-        <select name="first_second" id="id_first_second" required class="form-control">
-            <option value="" selected>-----------</option>
-            <option value="True">先行</option>
-            <option value="False">後攻</option>
-        </select>
-        <label for="id_first_second">先行or後攻</label>
-    </div>
+<div class="container mb-3">
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-floating mb-3">
+                    <input type="time" name="finished" value="{{ now }}" required id="id_finished" class="form-control">
+                    <label for="id_finished">試合終了時刻</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class=" form-floating mb-3">
+                    <select name="first_second" id="id_first_second" required class="form-control">
+                        <option value="" selected class="default">-----------</option>
+                        <option value="True">先行</option>
+                        <option value="False">後攻</option>
+                    </select>
+                    <label for="id_first_second">先行or後攻</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class=" form-floating mb-3">
+                    <select name="result" id="id_result" required class="form-control">
+                        <option value="" selected class="default">-----------</option>
+                        <option value="1">勝ち</option>
+                        <option value="-1">負け</option>
+                        <option value="-1">引き分け</option>
+                    </select>
+                    <label for="id_result">勝敗</label>
+                </div>
+            </div>
+        </div>
 
-    <div class="row">
-        <div class="col-lg-2">
-            <div class=" form-floating mb-3">
-                <select name="player1" id="id_player1" required class=" form-control" disabled>
-                    {% for zip in player_and_num %}
-                    {% if zip.player == user %}
-                    <option selected value="{{ zip.player.pk }}">{{ zip.num }}</option>
-                    {% endif %}
-                    {% endfor %}
-                </select>
-                <label for="id_player1">あなた</label>
+        <div class="row">
+            <div class="col-lg-2">
+                <div class=" form-floating mb-3">
+                    <select name="player1" id="id_player1" required class=" form-control" disabled>
+                        {% for zip in player_and_num %}
+                        {% if zip.player == user %}
+                        <option selected value="{{ zip.player.pk }}">{{ zip.num }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                    <label for="id_player1">あなた</label>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating mb-3">
+                    <select name="skill1" id="id_skill1" required class="form-control">
+                        <option value="">----------</option>
+                        {% for skill in skills %}
+                        <option value="{{ skill.pk }}">{{ skill }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="id_skill1">使用スキル</label>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating mb-3">
+                    <select name="deck_thema1" id="id_deck_thema1" required class="form-control">
+                        <option value="">----------</option>
+                        {% for thema in themas %}
+                        <option value="{{ thema.pk }}">{{ thema }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="id_deck_thema1">使用テーマ</label>
+                </div>
             </div>
         </div>
-        <div class="col">
-            <div class="form-floating mb-3">
-                <select name="skill1" id="id_skill1" required class="form-control">
-                    <option value="" selected>----------</option>
-                    {% for skill in skills %}
-                    <option value="{{ skill.pk }}">{{ skill }}</option>
-                    {% endfor %}
-                </select>
-                <label for="id_skill1">使用スキル</label>
+
+        <div class="row">
+            <div class="col-lg-2">
+                <div class=" form-floating mb-3">
+                    <select name="player2" id="id_player2" required class=" form-control">
+                        <option value="" selected class="default">----------</option>
+                        {% for zip in player_and_num %}
+                        <option value="{{ zip.player.pk }}">{{ zip.num }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="id_player2">対戦相手</label>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating mb-3">
+                    <select name="skill2" id="id_skill2" required class="form-control">
+                        <option value="" selected class="default">----------</option>
+                        {% for skill in skills %}
+                        <option value="{{ skill.pk }}" class="skills">{{ skill }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="id_skill2">相手使用スキル</label>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating mb-3">
+                    <select name="deck_thema2" id="id_deck_thema2" required class="form-control">
+                        <option value="" selected class="default">----------</option>
+                        {% for thema in themas %}
+                        <option value="{{ thema.pk }}" class="themas">{{ thema }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="id_deck_thema2">相手使用テーマ</label>
+                </div>
             </div>
         </div>
-        <div class="col">
-            <div class="form-floating mb-3">
-                <select name="deck_thema1" id="id_deck_thema1" required class="form-control">
-                    <option value="" selected>----------</option>
-                    {% for thema in themas %}
-                    <option value="{{ thema.pk }}">{{ thema }}</option>
-                    {% endfor %}
-                </select>
-                <label for="id_deck_thema1">使用テーマ</label>
-            </div>
+
+        <button class="btn btn-primary" id="post_form">送信</button>
+    </form>
+</div>
+<div class="container-fluid">
+    <div class="row align-items-center">
+        <div class="col-lg-4 col-md-6 mb-3">
+            <canvas id="distribution"></canvas>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-3">
+            <canvas id="personal"></canvas>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col-lg-2">
-            <div class=" form-floating mb-3">
-                <select name="player2" id="id_player2" required class=" form-control">
-                    <option value="" selected>----------</option>
-                    {% for zip in player_and_num %}
-                    <option value="{{ zip.player.pk }}">{{ zip.num }}</option>
-                    {% endfor %}
-                </select>
-                <label for="id_player2">対戦相手</label>
-            </div>
-        </div>
-        <div class="col">
-            <div class="form-floating mb-3">
-                <select name="skill2" id="id_skill2" required class="form-control">
-                    <option value="" selected>----------</option>
-                    {% for skill in skills %}
-                    <option value="{{ skill.pk }}">{{ skill }}</option>
-                    {% endfor %}
-                </select>
-                <label for="id_skill2">相手使用スキル</label>
-            </div>
-        </div>
-        <div class="col">
-            <div class="form-floating mb-3">
-                <select name="deck_thema2" id="id_deck_thema2" required class="form-control">
-                    <option value="" selected>----------</option>
-                    {% for thema in themas %}
-                    <option value="{{ thema.pk }}">{{ thema }}</option>
-                    {% endfor %}
-                </select>
-                <label for="id_deck_thema2">相手使用テーマ</label>
-            </div>
-        </div>
-    </div>
-
-    <div class=" form-floating mb-3">
-        <select name="result" id="id_result" required class="form-control">
-            <option value="" selected>-----------</option>
-            <option value="1">勝ち</option>
-            <option value="-1">負け</option>
-            <option value="-1">引き分け</option>
-        </select>
-        <label for="id_result">勝敗</label>
-    </div>
-
-        <div class=" form-check form-switch mb-1">
-            <input type="checkbox" class=" form-check-input" id="fix_thema">
-            <label for="fix_thema" class="form-check-label">テーマを固定</label>
-        </div>
-        <div class=" form-check form-switch mb-3">
-            <input type="checkbox" class=" form-check-input" id="fix_skill">
-            <label for="fix_skill" class="form-check-label">スキルを固定</label>
-        </div>
-    <button class="btn btn-primary">送信</button>
-</form>
+</div>
 {% endblock content %}
+
+
+{% block extra_js %}
+    <script src="{% static 'js/for_ajax_csrf.js' %}"></script>
+    <script>
+        function post_form(){
+            $.ajax({
+                type: "post",
+                url: "{% url 'game:create_game_ajax' tournament_pk %}",
+                dataType: "json",
+                data: {
+                    'finished_time': $("input[name='finished']").val(),
+                    'first_second': $("select[name='first_second']").val(),
+                    'result': $("select[name='result']").val(),
+                    'skill1': $("select[name='skill1']").val(),
+                    'deck_thema1': $("select[name='deck_thema1']").val(),
+                    'player2': $("select[name='player2']").val(),
+                    'skill2': $("select[name='skill2']").val(),
+                    'deck_thema2': $("select[name='deck_thema2']").val()
+                },
+                success: function(data){
+                    draw_distribution(data['themas']);
+                    draw_personalChart();
+                    document.querySelectorAll(".default").forEach((option)=>{
+                        option.selected = true;
+                    });
+                }
+            });
+        }
+        document.getElementById('post_form').addEventListener('click', (e)=>{
+            e.preventDefault();
+            post_form();
+        });
+        let distChart = undefined;
+        let personalChart = undefined;
+
+        function draw_distribution(themas){
+            if(typeof distChart !== 'undefined' && distChart) distChart.destroy();
+            const labels = [];
+            const datas = [];
+            const backgroundColor = ['rgba(255,99,132,0.4)','rgba(255,150,132,0.4)'];
+            for(key in themas){
+                labels.push(key);
+                datas.push(themas[key]);
+            }
+            const data = {
+                labels: labels,
+                datasets: [{
+                    data: datas,
+                    backgroundColor: backgroundColor,
+                }],
+            };
+            const options = {
+            };
+            const config = {
+                type: 'pie',
+                data: data,
+                options: options,
+            };
+            const ctx = document.getElementById('distribution').getContext('2d');
+            distChart = new Chart(ctx, config);
+        }
+
+        function draw_personalChart(){
+            if(typeof personalChart !== 'undefined' && personalChart) personalChart.destroy();
+            const labels = [1,2,3,4,5,6,7,8,9,10];
+            const datas = [1000, 0, 1000, 2000, 3000, 2000, 3000, 4000, 3000, 4000];
+            const data = {
+                labels: labels,
+                datasets: [{
+                    label: 'dp推移',
+                    data: datas,
+                    fill: true,
+                    backgroundColor: 'rgba(0, 0, 255, 0.2)',
+                    borderColor: 'rgba(0, 0, 255, 0.5)',
+                }],
+                borderWidth: 1
+            };
+            const options = {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+            const config = {
+                type: 'line',
+                data: data,
+                options: options
+            };
+            const ctx = document.getElementById('personal').getContext('2d');
+            personalChart = new Chart(ctx, config);
+        }
+
+        $(function(){
+            draw_personalChart();
+        });
+    </script>
+    {% endblock extra_js %}

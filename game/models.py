@@ -55,7 +55,8 @@ class Game(models.Model):
     ]
     tournament = models.ForeignKey(Tournament, verbose_name='大会名', on_delete=models.PROTECT, related_name='game')
     player1 = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='player1', related_name='game1', on_delete=models.PROTECT)
-    finished = models.DateTimeField(verbose_name='試合終了時刻', default=timezone.now)
+    finished_date = models.DateField(verbose_name='試合日付', default=timezone.now)
+    finished_time = models.TimeField(verbose_name='終了時間', default=timezone.now)
     skill1 = models.ForeignKey(Skill, verbose_name='使用スキル', on_delete=models.PROTECT, related_name='game1')
     deck_thema1 = models.ForeignKey(DeckThema, verbose_name='使用テーマ', on_delete=models.PROTECT, related_name='game1')
     player2 = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='対戦相手', on_delete=models.PROTECT, related_name='game')
@@ -65,7 +66,8 @@ class Game(models.Model):
     result = models.IntegerField(verbose_name='勝敗', choices=RESULT)
 
     def __str__(self):
-        return "{} vs {} at {}".format(self.player1, self.player2, timezone.localtime(self.finished).strftime("%Y/%m/%d %H:%M:%S"))
+        # return "{} vs {} at {} {}".format(self.player1, self.player2, timezone.localtime(self.finished_date).strftime("%Y/%m/%d"), timezone.localtime(self.finished_time).strftime("%H:%M:%S"))
+        return f'{self.finished_date.strftime("%Y/%m/%d")} {self.finished_time.strftime("%H:%M:%S")}'
 
     def get_absolute_url(self):
         return HttpResponseRedirect(reverse('game:create_game', kwargs={'tournament_pk': self.tournament.pk}))

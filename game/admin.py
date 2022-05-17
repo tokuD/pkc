@@ -64,10 +64,10 @@ class GameResource(resources.ModelResource):
 
     class Meta:
         model = models.Game
-        fields = ['tournament', 'finished', 'player1', 'player2', 'skill1', 'skill2', 'deck_thema1', 'deck_thema2', 'first_second', 'result']
+        fields = ['tournament', 'finished_date', 'finished_time', 'player1', 'player2', 'skill1', 'skill2', 'deck_thema1', 'deck_thema2', 'first_second', 'result']
 
 @admin.register(models.Game)
 class GameAdmin(ImportExportMixin, admin.ModelAdmin):
     resource_class = GameResource
-    list_display = ['tournament', 'player1', 'player2', 'finished', 'result']
+    list_display = ['tournament', 'player1', 'player2', 'finished_date', 'finished_time', 'result']
     list_filter = ['tournament']

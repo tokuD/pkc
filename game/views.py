@@ -1,11 +1,12 @@
 import datetime
 import json, csv
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views import generic
 from django.utils import timezone
 from django.contrib.auth import get_user_model, mixins
 from django.contrib import messages
+from django.urls import reverse
 
 
 from . import models, analysis
@@ -19,6 +20,24 @@ class TournamentListView(generic.ListView):
 class EnrollTournamentView(generic.DetailView):
     model = models.Tournament
     template_name = 'game/enroll_tournament.html'
+    pk_url_kwarg = 'tournament_pk'
+
+    def post(self, request, *args, **kwargs):
+        input_password = request.POST.get('password')
+        tournament_pk = self.kwargs.get('tournament_pk')
+        tournament = models.Tournament.objects.get(pk=tournament_pk)
+        if input_password:
+            players = models.PlayerToNum.objects.filter(tournament=tournament).count()
+            models.PlayerToNum.objects.create(
+                tournament=tournament,
+                player=self.request.user,
+                num=players+1
+            )
+            tournament.participants.add(self.request.user)
+            return HttpResponseRedirect(reverse('game:create_game', kwargs={'tournament_pk': tournament_pk}))
+        else:
+            return HttpResponseRedirect(reverse('game:enroll_tournament', kwargs={'tournament_pk': tournament_pk}))
+
 
 
 class CreateGameView(generic.TemplateView):
@@ -48,7 +67,9 @@ class CreateGameView(generic.TemplateView):
 
 class CreateGameAjaxView(mixins.LoginRequiredMixin, generic.View):
     def get(self, request, *args, **kwargs):
-        return
+        distribution = analysis.Distribution(self.kwargs.get('tournament_pk'))
+        themas = distribution.get_distribution()
+        return JsonResponse({'themas': themas}, safe=False)
 
     def post(self, request, *args, **kwargs):
         hour = int(request.POST.get('finished_time').split(':')[0])

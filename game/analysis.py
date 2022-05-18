@@ -13,5 +13,6 @@ class Distribution():
         for game in self.games:
             themas[game.deck_thema1.name] += 1
             themas[game.deck_thema2.name] += 1
-        return themas
+        return sorted(themas.items(), key=lambda x:x[1], reverse=True)
+        # return [('thema', count), ('thema', count), ...]
 

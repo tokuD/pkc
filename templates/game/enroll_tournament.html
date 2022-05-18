@@ -10,8 +10,8 @@
     <form action="" method="post">
         {% csrf_token %}
         <div class="mb-3 form-floating">
-            <input class="form-control" type="password" id="id_password" required placeholder="参加パスワード">
-            <label for="id_password">参加パスワード</label>
+            <input class="form-control" type="password" id="password" name="password" required placeholder="参加パスワード">
+            <label for="password">参加パスワード</label>
         </div>
         <button type="submit" class="btn btn-primary">参加</button>
     </form>

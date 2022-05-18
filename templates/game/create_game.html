@@ -8,8 +8,8 @@
 
 
 {% block content %}
-<div class="container mb-3">
-    <form action="" method="post">
+<div class="container mb-3 shadow p-2 border rounded dont-select">
+    <form action="" method="post" class="">
         {% csrf_token %}
         <div class="row">
             <div class="col-md-4">
@@ -18,7 +18,7 @@
                     <label for="id_finished">試合終了時刻</label>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-6 col-md-4">
                 <div class=" form-floating mb-3">
                     <select name="first_second" id="id_first_second" required class="form-control">
                         <option value="" selected class="default">-----------</option>
@@ -28,7 +28,7 @@
                     <label for="id_first_second">先行or後攻</label>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-6 col-md-4">
                 <div class=" form-floating mb-3">
                     <select name="result" id="id_result" required class="form-control">
                         <option value="" selected class="default">-----------</option>
@@ -84,7 +84,9 @@
                     <select name="player2" id="id_player2" required class=" form-control">
                         <option value="" selected class="default">----------</option>
                         {% for zip in player_and_num %}
+                        {% if zip.player != user %}
                         <option value="{{ zip.player.pk }}">{{ zip.num }}</option>
+                        {% endif %}
                         {% endfor %}
                     </select>
                     <label for="id_player2">対戦相手</label>
@@ -117,13 +119,17 @@
         <button class="btn btn-primary" id="post_form">送信</button>
     </form>
 </div>
-<div class="container-fluid">
-    <div class="row align-items-center">
-        <div class="col-lg-4 col-md-6 mb-3">
+<div class="container-fluid border rounded p-2 shadow dont-select">
+    <button class="btn btn-outline-primary mb-3" type="button" id="update_btn">データ更新</button>
+    <div class="row align-items-center justify-content-center">
+        <div class=" col-md-5 mb-3">
             <canvas id="distribution"></canvas>
         </div>
-        <div class="col-lg-4 col-md-6 mb-3">
+        <div class=" col-md-5 mb-3">
             <canvas id="personal"></canvas>
+        </div>
+        <div class="col-md-10">
+            <canvas id="compatibility"></canvas>
         </div>
     </div>
 </div>
@@ -157,6 +163,21 @@
                 }
             });
         }
+
+        function get_data(){
+            $.ajax({
+                type: "get",
+                url: "{% url 'game:create_game_ajax' tournament_pk %}",
+                dataType: "json",
+                data: {
+                },
+                success: function(data){
+                    draw_distribution(data['themas']);
+                    draw_personalChart();
+                }
+            });
+        }
+
         document.getElementById('post_form').addEventListener('click', (e)=>{
             e.preventDefault();
             post_form();
@@ -170,10 +191,11 @@
             const datas = [];
             const backgroundColor = ['rgba(255,99,132,0.4)','rgba(255,150,132,0.4)'];
             const borderColor = ['rgba(255,99,132,1)','rgba(255,150,132,1)'];
-            for(key in themas){
-                labels.push(key);
-                datas.push(themas[key]);
-            }
+            // themas = [('ガンドラ', 3), ('DD', 1), ...]
+            themas.forEach((thema)=>{
+                labels.push(thema[0]);
+                datas.push(thema[1]);
+            });
             const data = {
                 labels: labels,
                 datasets: [{
@@ -225,7 +247,12 @@
         }
 
         $(function(){
-            draw_personalChart();
+            get_data();
+        });
+
+        document.getElementById('update_btn').addEventListener('click', (e)=>{
+            e.preventDefault();
+            get_data();
         });
     </script>
     {% endblock extra_js %}

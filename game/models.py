@@ -32,6 +32,7 @@ class PlayerToNum(models.Model):
 
 class DeckThema(models.Model):
     name = models.CharField(verbose_name='デッキテーマ名', max_length=100)
+    thumbnail = models.ImageField(verbose_name='テーマサムネイル', upload_to='themas/', blank=True)
 
     def __str__(self):
         return self.name
@@ -64,6 +65,7 @@ class Game(models.Model):
     deck_thema2 = models.ForeignKey(DeckThema, on_delete=models.PROTECT, related_name='game2', verbose_name='相手テーマ')
     first_second = models.BooleanField(verbose_name='先行or後攻', choices=FIRST_SECOND)
     result = models.IntegerField(verbose_name='勝敗', choices=RESULT)
+    thema = models.CharField(verbose_name='テーマ相性用', max_length=100, blank=True)
 
     def __str__(self):
         # return "{} vs {} at {} {}".format(self.player1, self.player2, timezone.localtime(self.finished_date).strftime("%Y/%m/%d"), timezone.localtime(self.finished_time).strftime("%H:%M:%S"))

@@ -41,9 +41,7 @@ class EnrollTournamentView(generic.DetailView):
 
 
 class CreateGameView(generic.TemplateView):
-    # model = models.Game
     template_name = 'game/create_game.html'
-    # fields = ['finished', 'skill1', 'deck_thema1', 'player2', 'skill2', 'deck_thema2', 'first_second', 'result']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -64,32 +62,43 @@ class CreateGameView(generic.TemplateView):
         context.update(data)
         return context
 
-
 class CreateGameAjaxView(mixins.LoginRequiredMixin, generic.View):
     def get(self, request, *args, **kwargs):
-        distribution = analysis.Distribution(self.kwargs.get('tournament_pk'))
-        themas = distribution.get_distribution()
-        return JsonResponse({'themas': themas}, safe=False)
+        analyser = analysis.Analysis(self.kwargs.get('tournament_pk'), self.request.user)
+        themas = analyser.get_distribution()
+        dps = analyser.get_dp()
+        tables = analyser.get_tables()
+        return JsonResponse({'themas': themas, 'dps': dps, 'tables': tables}, safe=False)
 
     def post(self, request, *args, **kwargs):
         hour = int(request.POST.get('finished_time').split(':')[0])
         minute = int(request.POST.get('finished_time').split(':')[1])
         tournament=models.Tournament.objects.get(pk=self.kwargs.get('tournament_pk'))
+        result = int(request.POST.get('result'))
+        thema1 = models.DeckThema.objects.get(pk=request.POST.get('deck_thema1'))
+        thema2 = models.DeckThema.objects.get(pk=request.POST.get('deck_thema2'))
+        thema = ''
+        if result == 1: thema = "{},{}".format(thema1.name, thema2.name)
+        elif result == -1: thema = "{},{}".format(thema2.name, thema1.name)
         try:
             models.Game.objects.create(
                 tournament=tournament,
                 player1=self.request.user,
                 finished_time=datetime.time(hour, minute, 0, 0),
                 skill1=models.Skill.objects.get(pk=request.POST.get('skill1')),
-                deck_thema1=models.DeckThema.objects.get(pk=request.POST.get('deck_thema1')),
+                deck_thema1=thema1,
                 player2=get_user_model().objects.get(pk=request.POST.get('player2')),
                 skill2=models.Skill.objects.get(pk=request.POST.get('skill2')),
-                deck_thema2=models.DeckThema.objects.get(pk=request.POST.get('deck_thema2')),
+                deck_thema2=thema2,
                 first_second=request.POST.get('first_second'),
-                result=request.POST.get('result')
+                result=result,
+                thema=thema
             )
         except:
             pass
-        distribution = analysis.Distribution(self.kwargs.get('tournament_pk'))
-        themas = distribution.get_distribution()
-        return JsonResponse({'themas': themas}, safe=False)
+        # distribution = analysis.Distribution(self.kwargs.get('tournament_pk'))
+        analyser = analysis.Analysis(self.kwargs.get('tournament_pk'), self.request.user)
+        themas = analyser.get_distribution()
+        dps = analyser.get_dp()
+        tables = analyser.get_tables()
+        return JsonResponse({'themas': themas, 'dps': dps, 'tables': tables}, safe=False)

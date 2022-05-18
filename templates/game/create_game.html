@@ -119,8 +119,9 @@
         <button class="btn btn-primary" id="post_form">送信</button>
     </form>
 </div>
-<div class="container-fluid border rounded p-2 shadow dont-select">
-    <button class="btn btn-outline-primary mb-3" type="button" id="update_btn">データ更新</button>
+<div class="container border rounded p-2 shadow dont-select">
+    <button class="btn btn-outline-primary mb-" data-bs-toggle="collapse" data-bs-target="#table" id="display_table">相性表</button>
+    <button class="btn btn-outline-primary mb-" type="button" id="update_btn">データ更新</button>
     <div class="row align-items-center justify-content-center">
         <div class=" col-md-5 mb-3">
             <canvas id="distribution"></canvas>
@@ -128,9 +129,20 @@
         <div class=" col-md-5 mb-3">
             <canvas id="personal"></canvas>
         </div>
-        <div class="col-md-10">
-            <canvas id="compatibility"></canvas>
+
+        <div class="col-md-12 collapse" id="table">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover text-center shadow">
+                    <thead class="table-light">
+                        <tr id="table_header">
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
+
     </div>
 </div>
 {% endblock content %}
@@ -156,7 +168,8 @@
                 },
                 success: function(data){
                     draw_distribution(data['themas']);
-                    draw_personalChart();
+                    draw_personalChart(data['dps']);
+                    draw_tables(data['tables']);
                     document.querySelectorAll(".default").forEach((option)=>{
                         option.selected = true;
                     });
@@ -164,7 +177,7 @@
             });
         }
 
-        function get_data(){
+        function get_data(table=false){
             $.ajax({
                 type: "get",
                 url: "{% url 'game:create_game_ajax' tournament_pk %}",
@@ -173,7 +186,8 @@
                 },
                 success: function(data){
                     draw_distribution(data['themas']);
-                    draw_personalChart();
+                    draw_personalChart(data['dps']);
+                    if(table) draw_tables(data['tables']);
                 }
             });
         }
@@ -189,8 +203,8 @@
             if(typeof distChart !== 'undefined' && distChart) distChart.destroy();
             const labels = [];
             const datas = [];
-            const backgroundColor = ['rgba(255,99,132,0.4)','rgba(255,150,132,0.4)'];
-            const borderColor = ['rgba(255,99,132,1)','rgba(255,150,132,1)'];
+            const backgroundColor = ['rgba(255,99,132,0.4)','rgba(255,150,132,0.4)', 'rgba(255,200,132,0.4)',];
+            const borderColor = ['rgba(255,99,132,1)','rgba(255,150,132,1)','rgba(255,200,132,1)',];
             // themas = [('ガンドラ', 3), ('DD', 1), ...]
             themas.forEach((thema)=>{
                 labels.push(thema[0]);
@@ -207,7 +221,7 @@
             const options = {
             };
             const config = {
-                type: 'pie',
+                type: 'doughnut',
                 data: data,
                 options: options,
             };
@@ -215,10 +229,14 @@
             distChart = new Chart(ctx, config);
         }
 
-        function draw_personalChart(){
+        function draw_personalChart(dps){
             if(typeof personalChart !== 'undefined' && personalChart) personalChart.destroy();
-            const labels = [1,2,3,4,5,6,7,8,9,10];
-            const datas = [1000, 0, 1000, 2000, 3000, 2000, 3000, 4000, 3000, 4000];
+            const labels = [];
+            const datas = [];
+            dps.forEach((dp)=>{
+                labels.push(dp[0]);
+                datas.push(dp[1]);
+            });
             const data = {
                 labels: labels,
                 datasets: [{
@@ -246,13 +264,87 @@
             personalChart = new Chart(ctx, config);
         }
 
+        function draw_tables(tables){
+            const header = document.getElementById('table_header');
+            while(header.firstChild) header.firstChild.remove();
+            const th1 = document.createElement('th');
+            th1.setAttribute('scope', 'col');
+            th1.style.width = 40;
+            header.appendChild(th1);
+            tables[0].forEach((thema)=>{
+                const th = document.createElement('th');
+                th.setAttribute('scope', 'col');
+                const div = document.createElement('div');
+                div.classList.add('row','flex-column');
+                th.appendChild(div);
+                const small = document.createElement('small');
+                div.appendChild(small);
+                small.classList.add('text-muted');
+                small.textContent = thema['name'];
+                const div_img = document.createElement('div');
+                div_img.classList.add('col');
+                const img = document.createElement('img');
+                img.src = thema['url'];
+                img.setAttribute('width', '30');
+                img.setAttribute('height', '30');
+                div_img.appendChild(img);
+                div.appendChild(div_img);
+                header.appendChild(th);
+            });
+            const th2 = document.createElement('th');
+            th2.setAttribute('scope', 'col');
+            th2.classList.add('align-middle');
+            th2.textContent = '合計';
+            header.appendChild(th2);
+
+            const tbody = document.querySelector('tbody');
+            while(tbody.firstChild) tbody.firstChild.remove();
+            tables.slice(1).forEach((row)=>{
+                const tr = document.createElement('tr');
+                const th = document.createElement('th');
+                const img = document.createElement('img');
+                th.classList.add('align-middle','text-center');
+                tbody.appendChild(tr);
+                tr.appendChild(th);
+                th.appendChild(img);
+                img.src = row[0]['url'];
+                img.setAttribute('width', 30);
+                img.setAttribute('height', 30);
+                row.slice(1).forEach((col)=>{
+                    const td = document.createElement('td');
+                    const div = document.createElement('div');
+                    const span = document.createElement('span');
+                    const small = document.createElement('small');
+                    span.textContent = col['rate'];
+                    const rate = col['rate'].split('%')[0];
+                    if(rate === '-') span.classList.add('text-muted');
+                    else if(rate >= 60) span.classList.add('text-primary');
+                    else if(rate <= 40) span.classList.add('text-danger');
+                    else if(rate <= 45) span.classList.add('text-warning');
+                    else if(rate >= 55) span.classList.add('text-info');
+                    small.textContent = col['win'] + '-' + col['loose'];
+                    tr.appendChild(td);
+                    td.appendChild(div);
+                    div.appendChild(span);
+                    div.appendChild(small);
+                    div.classList.add('row', 'flex-column');
+                    span.classList.add('rate');
+                    small.classList.add('text-muted');
+                });
+            });
+        }
+
         $(function(){
             get_data();
         });
 
+        document.getElementById('display_table').addEventListener('click', ()=>{
+            get_data(table=true);
+        });
+
         document.getElementById('update_btn').addEventListener('click', (e)=>{
             e.preventDefault();
-            get_data();
+            get_data(table=true);
         });
     </script>
     {% endblock extra_js %}

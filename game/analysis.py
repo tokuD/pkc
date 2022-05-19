@@ -16,7 +16,7 @@ class Analysis():
     def get_distribution(self):
         thema_names = Counter()
         themas = Counter()
-        display_max = 4
+        display_max = 5
         for game in self.games:
             thema_names[game.deck_thema1.name] += 1
             thema_names[game.deck_thema2.name] += 1

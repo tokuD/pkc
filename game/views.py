@@ -1,12 +1,14 @@
 import datetime
 import json, csv
-from django.http import JsonResponse, HttpResponseRedirect
+from operator import index
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.views import generic
 from django.utils import timezone
 from django.contrib.auth import get_user_model, mixins
 from django.contrib import messages
 from django.urls import reverse
+from django_pandas.io import read_frame
 
 
 from . import models, analysis
@@ -67,8 +69,10 @@ class CreateGameAjaxView(mixins.LoginRequiredMixin, generic.View):
         analyser = analysis.Analysis(self.kwargs.get('tournament_pk'), self.request.user)
         themas = analyser.get_distribution()
         dps = analyser.get_dp()
-        tables = analyser.get_tables()
-        return JsonResponse({'themas': themas, 'dps': dps, 'tables': tables}, safe=False)
+        if request.GET.get('table'):
+            tables = analyser.get_tables()
+            return JsonResponse({'themas': themas, 'dps': dps, 'tables': tables}, safe=False)
+        return JsonResponse({'themas': themas, 'dps': dps}, safe=False)
 
     def post(self, request, *args, **kwargs):
         hour = int(request.POST.get('finished_time').split(':')[0])
@@ -102,3 +106,15 @@ class CreateGameAjaxView(mixins.LoginRequiredMixin, generic.View):
         dps = analyser.get_dp()
         tables = analyser.get_tables()
         return JsonResponse({'themas': themas, 'dps': dps, 'tables': tables}, safe=False)
+
+
+class CsvExportView(mixins.LoginRequiredMixin, generic.View):
+    def get(self, request, *args, **kwargs):
+        tournament_pk = self.kwargs.get('tournament_pk')
+        tournament = models.Tournament.objects.get(pk=tournament_pk)
+        query = models.Game.objects.filter(tournament=tournament)
+        response = HttpResponse(content_type='text/csv; charset=CP932')
+        response['Content-Disposition'] = 'attachment; filename={}.csv'.format(tournament.name)
+        df = read_frame(query)
+        df.to_csv(path_or_buf=response, encoding='utf_8_sig', index=None)
+        return response

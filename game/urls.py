@@ -10,4 +10,5 @@ urlpatterns = [
     path('tournament/enroll/<int:tournament_pk>/', views.EnrollTournamentView.as_view(), name='enroll_tournament'),
     path('tournament/create_game/<int:tournament_pk>/', views.CreateGameView.as_view(), name='create_game'),
     path('tournament/create_game/ajax/<int:tournament_pk>/', views.CreateGameAjaxView.as_view(), name='create_game_ajax'),
+    path('tournament/csv_export/<int:tournament_pk>/', views.CsvExportView.as_view(), name='csv_export'),
 ]

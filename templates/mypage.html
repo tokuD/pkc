@@ -7,5 +7,27 @@
 
 
 {% block content %}
-    
+<div class="container">
+    <h3>参加中の大会</h3>
+    <div class="accordion dont-select">
+        {% for tournament in object_list %}
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accordion_{{ forloop.counter }}">
+                    {{ tournament.name }}
+                </button>
+            </h2>
+            <div class="accordion-collapse collapse" id="accordion_{{ forloop.counter }}">
+                <div class="accordion-body">
+                    {% if user in tournament.participants.all %}
+                        <a class="btn btn-success" href="{% url 'game:create_game' tournament.pk  %}">結果入力</a>
+                    {% else %}
+                        <a class="btn btn-success" href="{% url 'game:enroll_tournament' tournament.pk  %}">参加登録</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock content %}

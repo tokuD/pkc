@@ -82,8 +82,9 @@ class CreateGameAjaxView(mixins.LoginRequiredMixin, generic.View):
         thema1 = models.DeckThema.objects.get(pk=request.POST.get('deck_thema1'))
         thema2 = models.DeckThema.objects.get(pk=request.POST.get('deck_thema2'))
         thema = ''
-        if result == 1: thema = "{},{}".format(thema1.name, thema2.name)
-        elif result == -1: thema = "{},{}".format(thema2.name, thema1.name)
+        print(result)
+        if int(result) == 1: thema = "{},{}".format(thema1.name, thema2.name)
+        elif int(result) == -1: thema = "{},{}".format(thema2.name, thema1.name)
         models.Game.objects.create(
             tournament=tournament,
             player1=self.request.user,
@@ -119,3 +120,9 @@ class CsvExportView(mixins.LoginRequiredMixin, generic.View):
 class MyPageView(mixins.LoginRequiredMixin, generic.DetailView):
     model = get_user_model()
     template_name = 'mypage.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        object_list = models.Tournament.objects.filter(participants=self.request.user)
+        context.update({'object_list': object_list})
+        return context

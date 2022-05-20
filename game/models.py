@@ -66,6 +66,7 @@ class Game(models.Model):
     first_second = models.BooleanField(verbose_name='先行or後攻', choices=FIRST_SECOND)
     result = models.IntegerField(verbose_name='勝敗', choices=RESULT)
     thema = models.CharField(verbose_name='テーマ相性用', max_length=100, blank=True)
+    is_valid = models.BooleanField(verbose_name='is_valid', default=False)
 
     def __str__(self):
         # return "{} vs {} at {} {}".format(self.player1, self.player2, timezone.localtime(self.finished_date).strftime("%Y/%m/%d"), timezone.localtime(self.finished_time).strftime("%H:%M:%S"))

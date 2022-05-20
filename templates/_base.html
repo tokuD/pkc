@@ -29,22 +29,23 @@
                     <ul class="navbar-nav flex-column">
                         <li class="navbar-item mb-3"><a href="" class="nav-link"><h2>PKC</h2></a></li>
                         <li class="navbar-item mb-1">
-                            <a href="#collapseGame" data-bs-toggle="collapse" class="nav-link"><i class="bi bi-trophy"></i>&ThickSpace; 試合</a>
+                            <a href="{% url 'game:tournament_list' %}" class="nav-link"><i class="bi bi-trophy"></i>&ThickSpace;大会一覧</a>
+                            <!-- <a href="#collapseGame" data-bs-toggle="collapse" class="nav-link"><i class="bi bi-trophy"></i>&ThickSpace; 試合</a>
                             <div class="collapse show" id="collapseGame">
                                 <ul>
                                     <li><a href="{% url 'game:tournament_list' %}" class="nav-link">大会リスト</a></li>
                                     <li><a href="" class="nav-link">リーグ開催</a></li>
                                 </ul>
-                            </div>
+                            </div> -->
                         </li>
-                        <li class="navbar-item mb-1">
+                        <!-- <li class="navbar-item mb-1">
                             <a href="#collapseData" data-bs-toggle="collapse" class="nav-link"><i class="bi bi-bar-chart-line"></i>&ThickSpace; データ</a>
                             <div class="collapse show" id="collapseData">
                                 <ul>
                                     <li><a href="" class="nav-link">結果一覧</a></li>
                                 </ul>
                             </div>
-                        </li>
+                        </li> -->
                     </ul>
                 </div>
 
@@ -61,22 +62,23 @@
                         </form>
                         <ul class="px-0 list-unstyled">
                             <li class="navbar-item mb-1">
-                                <a href="#offcanvasGame" data-bs-toggle="collapse" class="nav-link text-light"><i class="bi bi-trophy"></i>&ThickSpace; 試合</a>
+                                <li><a href="{% url 'game:tournament_list' %}" class="nav-link text-light"><i class="bi bi-trophy"></i>&ThickSpace;大会一覧</a></li>
+                                <!-- <a href="#offcanvasGame" data-bs-toggle="collapse" class="nav-link text-light"><i class="bi bi-trophy"></i>&ThickSpace; 試合</a>
                                 <div class="collapse show" id="offcanvasGame">
                                     <ul>
                                         <li><a href="{% url 'game:tournament_list' %}" class="nav-link text-light">大会リスト</a></li>
                                         <li><a href="" class="nav-link text-light">リーグ開催</a></li>
                                     </ul>
-                                </div>
+                                </div> -->
                             </li>
-                            <li class="navbar-item mb-1">
+                            <!-- <li class="navbar-item mb-1">
                                 <a href="#offcanvasData" data-bs-toggle="collapse" class="nav-link text-light"><i class="bi bi-bar-chart-line"></i>&ThickSpace; データ</a>
                                 <div class="collapse show" id="offcanvasData">
                                     <ul>
                                         <li><a href="" class="nav-link text-light">結果一覧</a></li>
                                     </ul>
                                 </div>
-                            </li>
+                            </li> -->
                         </ul>
                     </div>
                 </div>
@@ -109,7 +111,7 @@
                         <ul class="dropdown-menu dropdown-menu-dark">
                             {% if user.is_authenticated %}
                                 <li><a href="{% url 'game:mypage' user.pk %}" class="dropdown-item"><i class="bi bi-person-fill"></i>&ThickSpace;マイページ</a></li>
-                                <li><a href="" class="dropdown-item"><i class="bi bi-gear-fill"></i>&ThickSpace;設定</a></li>
+                                <!-- <li><a href="" class="dropdown-item"><i class="bi bi-gear-fill"></i>&ThickSpace;設定</a></li> -->
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a href="{% url 'account_logout' %}" class="dropdown-item"><i class="bi bi-door-closed-fill"></i>&ThickSpace;ログアウト</a></li>
                             {% else %}

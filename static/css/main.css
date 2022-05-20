@@ -1,3 +1,7 @@
 .dont-select{
     user-select: none;
 }
+
+.transition_3s {
+    transition: all .3s;
+}

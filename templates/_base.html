@@ -108,7 +108,7 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark">
                             {% if user.is_authenticated %}
-                                <li><a href="" class="dropdown-item"><i class="bi bi-person-fill"></i>&ThickSpace;マイページ</a></li>
+                                <li><a href="{% url 'game:mypage' user.pk %}" class="dropdown-item"><i class="bi bi-person-fill"></i>&ThickSpace;マイページ</a></li>
                                 <li><a href="" class="dropdown-item"><i class="bi bi-gear-fill"></i>&ThickSpace;設定</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a href="{% url 'account_logout' %}" class="dropdown-item"><i class="bi bi-door-closed-fill"></i>&ThickSpace;ログアウト</a></li>
@@ -124,11 +124,13 @@
 
                 <!-- *MAIN CONTENT -->
                 <div class="container-fluid my-3">
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} p-1" role="alert" style="transition: all .3s;">
-                            <span>{{ message }}</span>
-                        </div>
-                    {% endfor %}
+                    <div class="">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} p-1 transition_3s" role="alert">
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
                     {% block content %}{% endblock content %}
                 </div>
                 <!-- */MAIN CONTENT -->

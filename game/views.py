@@ -19,7 +19,7 @@ class TournamentListView(generic.ListView):
     template_name = 'game/tournament_list.html'
 
 
-class EnrollTournamentView(generic.DetailView):
+class EnrollTournamentView(mixins.LoginRequiredMixin, generic.DetailView):
     model = models.Tournament
     template_name = 'game/enroll_tournament.html'
     pk_url_kwarg = 'tournament_pk'
@@ -42,7 +42,7 @@ class EnrollTournamentView(generic.DetailView):
 
 
 
-class CreateGameView(generic.TemplateView):
+class CreateGameView(mixins.LoginRequiredMixin, generic.TemplateView):
     template_name = 'game/create_game.html'
 
     def get_context_data(self, **kwargs):
@@ -75,37 +75,33 @@ class CreateGameAjaxView(mixins.LoginRequiredMixin, generic.View):
         return JsonResponse({'themas': themas, 'dps': dps}, safe=False)
 
     def post(self, request, *args, **kwargs):
-        hour = int(request.POST.get('finished_time').split(':')[0])
-        minute = int(request.POST.get('finished_time').split(':')[1])
+        hour = request.POST.get('finished_time').split(':')[0]
+        minute = request.POST.get('finished_time').split(':')[1]
         tournament=models.Tournament.objects.get(pk=self.kwargs.get('tournament_pk'))
-        result = int(request.POST.get('result'))
+        result = request.POST.get('result')
         thema1 = models.DeckThema.objects.get(pk=request.POST.get('deck_thema1'))
         thema2 = models.DeckThema.objects.get(pk=request.POST.get('deck_thema2'))
         thema = ''
         if result == 1: thema = "{},{}".format(thema1.name, thema2.name)
         elif result == -1: thema = "{},{}".format(thema2.name, thema1.name)
-        try:
-            models.Game.objects.create(
-                tournament=tournament,
-                player1=self.request.user,
-                finished_time=datetime.time(hour, minute, 0, 0),
-                skill1=models.Skill.objects.get(pk=request.POST.get('skill1')),
-                deck_thema1=thema1,
-                player2=get_user_model().objects.get(pk=request.POST.get('player2')),
-                skill2=models.Skill.objects.get(pk=request.POST.get('skill2')),
-                deck_thema2=thema2,
-                first_second=request.POST.get('first_second'),
-                result=result,
-                thema=thema
-            )
-        except:
-            pass
-        # distribution = analysis.Distribution(self.kwargs.get('tournament_pk'))
+        models.Game.objects.create(
+            tournament=tournament,
+            player1=self.request.user,
+            finished_time=datetime.time(int(hour), int(minute), 0, 0),
+            skill1=models.Skill.objects.get(pk=request.POST.get('skill1')),
+            deck_thema1=thema1,
+            player2=get_user_model().objects.get(pk=request.POST.get('player2')),
+            skill2=models.Skill.objects.get(pk=request.POST.get('skill2')),
+            deck_thema2=thema2,
+            first_second=request.POST.get('first_second'),
+            result=int(result),
+            thema=thema
+        )
         analyser = analysis.Analysis(self.kwargs.get('tournament_pk'), self.request.user)
         themas = analyser.get_distribution()
         dps = analyser.get_dp()
         tables = analyser.get_tables()
-        return JsonResponse({'themas': themas, 'dps': dps, 'tables': tables}, safe=False)
+        return JsonResponse({'themas': themas, 'dps': dps, 'tables': tables, 'success': True, 'message': '保存しました。'}, safe=False)
 
 
 class CsvExportView(mixins.LoginRequiredMixin, generic.View):
@@ -118,3 +114,8 @@ class CsvExportView(mixins.LoginRequiredMixin, generic.View):
         df = read_frame(query)
         df.to_csv(path_or_buf=response, encoding='utf_8_sig', index=None)
         return response
+
+
+class MyPageView(mixins.LoginRequiredMixin, generic.DetailView):
+    model = get_user_model()
+    template_name = 'mypage.html'

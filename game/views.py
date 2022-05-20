@@ -82,7 +82,6 @@ class CreateGameAjaxView(mixins.LoginRequiredMixin, generic.View):
         thema1 = models.DeckThema.objects.get(pk=request.POST.get('deck_thema1'))
         thema2 = models.DeckThema.objects.get(pk=request.POST.get('deck_thema2'))
         thema = ''
-        print(result)
         if int(result) == 1: thema = "{},{}".format(thema1.name, thema2.name)
         elif int(result) == -1: thema = "{},{}".format(thema2.name, thema1.name)
         models.Game.objects.create(
@@ -111,7 +110,7 @@ class CsvExportView(mixins.LoginRequiredMixin, generic.View):
         tournament = models.Tournament.objects.get(pk=tournament_pk)
         query = models.Game.objects.filter(tournament=tournament)
         response = HttpResponse(content_type='text/csv; charset=CP932')
-        response['Content-Disposition'] = 'attachment; filename={}.csv'.format(tournament.name)
+        response['Content-Disposition'] = 'attachment; filename={}_{}.csv'.format(tournament.name,timezone.localtime(timezone.now()).strftime("%Y%m%d%H%M%S"))
         df = read_frame(query)
         df.to_csv(path_or_buf=response, encoding='utf_8_sig', index=None)
         return response

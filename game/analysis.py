@@ -13,23 +13,28 @@ class Analysis():
 
     def game_valid(self):
         for game in self.games:
-            oppo = models.Game.objects.filter(
-                player1=game.player2,
-                finished_date=game.finished_date,
-                finished_time=game.finished_time,
-                skill1=game.skill2,
-                deck_thema1=game.deck_thema2,
-                player2=game.player1,
-                skill2=game.skill1,
-                deck_thema2=game.deck_thema1,
-                first_second=not game.first_second,
-                result=game.result * (-1),
-                is_valid=False
-            )
-            if oppo.count() == 1:
+            try:
+                oppo = models.Game.objects.get(
+                    player1=game.player2,
+                    finished_date=game.finished_date,
+                    finished_time=game.finished_time,
+                    skill1=game.skill2,
+                    deck_thema1=game.deck_thema2,
+                    player2=game.player1,
+                    skill2=game.skill1,
+                    deck_thema2=game.deck_thema1,
+                    first_second=not game.first_second,
+                    result=game.result * (-1),
+                    is_valid=False
+                )
                 game.is_valid = True
+                game.count = True
+                oppo.is_valid = True
+                oppo.save()
                 game.save()
-        return self.games.filter(is_valid=True)
+            except models.Game.DoesNotExist:
+                pass
+        return self.games.filter(count=True)
 
 
     def get_distribution(self):

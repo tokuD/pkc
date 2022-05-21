@@ -28,13 +28,13 @@ class Analysis():
                     is_valid=False
                 )
                 game.is_valid = True
-                game.count = True
+                game.used = True
                 oppo.is_valid = True
                 oppo.save()
                 game.save()
             except models.Game.DoesNotExist:
                 pass
-        return self.games.filter(count=True)
+        return self.games.filter(used=True)
 
 
     def get_distribution(self):

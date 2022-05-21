@@ -17,7 +17,7 @@
                     {{ tournament.name }}
                 </button>
             </h2>
-            <div class="accordion-collapse collapse" id="accordion_{{ forloop.counter }}">
+            <div class="accordion-collapse collapse show" id="accordion_{{ forloop.counter }}">
                 <div class="accordion-body">
                     {% if user in tournament.participants.all %}
                         <a class="btn btn-success" href="{% url 'game:create_game' tournament.pk  %}">結果入力</a>

@@ -5,3 +5,8 @@
 .transition_3s {
     transition: all .3s;
 }
+
+table {
+    width: 100%;
+    table-layout: fixed;
+}

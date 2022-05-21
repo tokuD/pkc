@@ -59,7 +59,9 @@ class CreateGameView(mixins.LoginRequiredMixin, generic.TemplateView):
             'now': timezone.localtime(timezone.now()).strftime("%H:%M"),
             'skills': models.Skill.objects.all(),
             'themas': models.DeckThema.objects.all(),
-            'player_and_num': player_and_num
+            'player_and_num': player_and_num,
+            'hours': range(24),
+            'minutes': range(60)
         }
         context.update(data)
         return context
@@ -75,8 +77,10 @@ class CreateGameAjaxView(mixins.LoginRequiredMixin, generic.View):
         return JsonResponse({'themas': themas, 'dps': dps}, safe=False)
 
     def post(self, request, *args, **kwargs):
-        hour = request.POST.get('finished_time').split(':')[0]
-        minute = request.POST.get('finished_time').split(':')[1]
+        # hour = request.POST.get('finished_time').split(':')[0]
+        # minute = request.POST.get('finished_time').split(':')[1]
+        hour = request.POST.get('hour')
+        minute = request.POST.get('minute')
         tournament=models.Tournament.objects.get(pk=self.kwargs.get('tournament_pk'))
         result = request.POST.get('result')
         thema1 = models.DeckThema.objects.get(pk=request.POST.get('deck_thema1'))
@@ -114,6 +118,19 @@ class CsvExportView(mixins.LoginRequiredMixin, generic.View):
         df = read_frame(query)
         df.to_csv(path_or_buf=response, encoding='utf_8_sig', index=None)
         return response
+
+
+class XlsxExportView(mixins.LoginRequiredMixin, generic.View):
+    def get(self, request, *args, **kwargs):
+        tournament_pk = self.kwargs.get('tournament_pk')
+        tournament = models.Tournament.objects.get(pk=tournament_pk)
+        query = models.Game.objects.filter(tournament=tournament)
+        response = HttpResponse(content_type='application/vnd.ms-excel; charset=CP932')
+        response['Content-Disposition'] = 'attachment; filename={}_{}.xlsx'.format(tournament.name,timezone.localtime(timezone.now()).strftime("%Y%m%d%H%M%S"))
+        df = read_frame(query)
+        df.to_excel(excel_writer=response, index=None)
+        return response
+
 
 
 class MyPageView(mixins.LoginRequiredMixin, generic.DetailView):

@@ -67,7 +67,7 @@ class Game(models.Model):
     result = models.IntegerField(verbose_name='勝敗', choices=RESULT)
     thema = models.CharField(verbose_name='テーマ相性用', max_length=100, blank=True)
     is_valid = models.BooleanField(verbose_name='is_valid', default=False)
-    count = models.BooleanField(verbose_name='集計用', default=False)
+    used = models.BooleanField(verbose_name='集計用', default=False)
 
     def __str__(self):
         return f'{self.finished_date.strftime("%Y/%m/%d")} {self.finished_time.strftime("%H:%M:%S")}'

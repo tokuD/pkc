@@ -25,19 +25,38 @@
     </form> -->
 
 
-    <h2 class="mb-3">Discordアカウントがない方</h2>
+    <h2 class="mb-3">メールアドレスでログイン</h2>
     <form action="" method="post" class="mb-3">
         {% csrf_token %}
+        {% for error in form.non_field_errors %}
+            <p><small class="text-danger">{{ error }}</small></p>
+        {% endfor %}
+
+        {% for error in form.email.errors %}
+            <p class="m-0"><small class="text-danger">{{ error }}</small></p>
+        {% endfor %}
         <div class="mb-3 form-floating">
-            <input type="text" name="login" placeholder="ユーザー名" autocomplete="username" maxlength="150" required id="id_login" class="form-control">
-            <label for="id_login" class="form-label">ユーザー名</label>
+            <input type="email" name="login" placeholder="メールアドレス" autocomplete="email" required id="id_login" class="form-control">
+            <label for="id_login" class="form-label">メールアドレス</label>
         </div>
+
+        {% for error in form.password.errors %}
+            <p class="m-0"><small class="text-danger">{{ error }}</small></p>
+        {% endfor %}
         <div class="mb-3 form-floating">
             <input type="password" name="password" placeholder="パスワード" autocomplete="current-password" required id="id_password" class="form-control">
             <label for="id_password" class="form-label">パスワード</label>
         </div>
+
+        <div class="form-check mb-3">
+            <label class="form-check-label" for="id_remember">ログインしたままにする</label>
+            <input class="form-check-input" type="checkbox" name="remember" id="id_remember" checked>
+        </div>
+
         <button type="submit" class="btn btn-primary">ログイン</button>
     </form>
-    <small class="text-muted">登録がまだの方は<a href="{% url 'account_signup' %}">こちら</a></small>
+    <p><small class="text-muted">登録がまだの方は<a href="{% url 'account_signup' %}">こちら</a></small></p>
+    <p><small class="text-muted">パスワードを忘れた方は<a href="{% url 'account_reset_password' %}">こちら</a></small></p>
+
 
 {% endblock content %}

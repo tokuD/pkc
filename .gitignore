@@ -1,5 +1,5 @@
-.settings.ini
 .venv
 db.sqlite3
-media_root
+media_root/*
 themas
+.env
